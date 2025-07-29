@@ -23,8 +23,8 @@ class UpdatePasswordRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'current_password' => ['required'],
-            'password' => ['required', 'confirmed', Password::defaults()],
+            'current_password' => ['required','min:8'],
+            'password' => ['required', 'confirmed','min:8', Password::defaults()],
         ];
     }
 
@@ -32,8 +32,10 @@ class UpdatePasswordRequest extends FormRequest
     {
         return [
             'current_password.required' => 'Kata sandi saat ini wajib diisi.',
-            'password.required' => 'Password baru wajib diisi.',
-            'password.confirmed' => 'Konfirmasi password tidak cocok.',
+            'current_password.min' => 'Kata sandi minimal harus 8 karakter.',
+            'password.required' => 'Kata sandi baru wajib diisi.',
+            'password.confirmed' => 'Kata sandi Konfirmasi tidak cocok.',
+            'password.min' => 'Kata sandi minimal harus 8 karakter.',
         ];
     }
 }

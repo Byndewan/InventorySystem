@@ -38,6 +38,7 @@
 
                     <div class="flex items-center space-x-4">
                         <div class="relative ml-3">
+                            @if (auth()->user()->avatar)
                             <div class="flex items-center space-x-2">
                                 <div class="text-right hidden sm:block">
                                     <div class="text-sm font-medium text-gray-700">{{ Auth::user()->name }}</div>
@@ -46,6 +47,18 @@
                                 <img class="h-8 w-8 rounded-full"
                                     src="{{ asset('uploads/admin/' . Auth::user()->avatar) }}" alt="User profile">
                             </div>
+                            @else
+                            <div class="h-full w-full flex items-center justify-center text-gray-500 rounded-full">
+                                <div class="text-right hidden sm:block">
+                                    <div class="text-sm font-medium text-gray-700">{{ Auth::user()->name }}</div>
+                                    <div class="text-xs text-gray-500">Administrator</div>
+                                </div>
+                                <svg class="h-10 w-10" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                            @endif
                         </div>
                     </div>
                 </div>

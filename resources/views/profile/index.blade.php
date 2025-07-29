@@ -28,7 +28,7 @@
                         <div class="mt-6 flex space-x-4">
                             <a href="{{ route('profile.edit') }}"
                                 class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700">
-                                Perbarui
+                                Perbarui Profil
                             </a>
                             <a href="{{ route('profile.password.edit') }}"
                                 class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">

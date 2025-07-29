@@ -19,7 +19,7 @@ class ItemController extends Controller
 
         $totalItems = Item::count();
         $inStockItems = Item::where('quantity', '>=', 10)->count();
-        $lowStockItems = Item::where('quantity', '<', 10)->where('quantity', '>', 0)->count();
+        $lowStockItems = Item::whereBetween('quantity', [1, 9])->count();
         $outOfStockItems = Item::where('quantity', 0)->count();
 
         $items = Item::when($search, function ($query) use ($search) {

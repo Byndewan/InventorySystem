@@ -59,14 +59,19 @@ class ProfileController extends Controller
     public function updatePassword(Request $request)
     {
         $request->validate([
-            'current_password' => ['required', 'current_password'],
-            'password' => ['required', 'confirmed', Password::defaults()],
+            'current_password' => ['required'],
+            'password' => ['required', 'confirmed'],
         ]);
 
         $user = Auth::user();
+
+        if (!Hash::check($request->current_password, $user->password)) {
+            return back()->withErrors(['current_password' => 'Kata sandi saat ini tidak sesuai.']);
+        }
+
         $user->password = Hash::make($request->password);
         $user->save();
 
-        return redirect()->route('profile.show')->with('success', 'Kata sandi berhasil diperbarui!');
-    }
+        return redirect()->route('profile.index')->with('success', 'Kata sandi berhasil diperbarui!');
+}
 }

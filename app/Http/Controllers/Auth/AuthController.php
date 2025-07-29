@@ -35,7 +35,7 @@ class AuthController extends Controller
         $this->incrementLoginAttempts($request);
 
         return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
+            'email' => 'Data yang dimasukkan tidak sesuai.',
         ]);
     }
 
@@ -78,6 +78,6 @@ class AuthController extends Controller
 
     protected function fireLockoutEvent(Request $request)
     {
-        // event(new Lockout($request));
+        //
     }
 }

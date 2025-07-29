@@ -1,0 +1,72 @@
+<?php
+
+namespace App\Http\Controllers\Profile;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules\Password;
+
+class ProfileController extends Controller
+{
+    public function index()
+    {
+        return view('profile.index', [
+            'user' => Auth::user(),
+        ]);
+    }
+
+    public function edit()
+    {
+        return view('profile.edit', [
+            'user' => Auth::user(),
+        ]);
+    }
+
+    public function update(Request $request)
+    {
+        $user = Auth::user();
+
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $user->id],
+            'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
+        ]);
+
+        if ($request->hasFile('avatar')) {
+            if ($user->avatar && file_exists(public_path('uploads/admin/' . $user->avatar))) {
+                unlink(public_path('uploads/admin/' . $user->avatar));
+            }
+
+            $avatarName = time() . '.' . $request->avatar->extension();
+            $request->avatar->move(public_path('uploads/admin'), $avatarName);
+            $user->avatar = $avatarName;
+        }
+
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->save();
+
+        return redirect()->route('profile.index')->with('success', 'Profil berhasil diperbarui!');
+    }
+
+    public function editPassword()
+    {
+        return view('profile.password');
+    }
+
+    public function updatePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => ['required', 'current_password'],
+            'password' => ['required', 'confirmed', Password::defaults()],
+        ]);
+
+        $user = Auth::user();
+        $user->password = Hash::make($request->password);
+        $user->save();
+
+        return redirect()->route('profile.show')->with('success', 'Kata sandi berhasil diperbarui!');
+    }
+}

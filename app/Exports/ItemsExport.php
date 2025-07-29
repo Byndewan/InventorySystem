@@ -16,27 +16,11 @@ class ItemsExport implements FromCollection, WithHeadings, WithMapping
 
     public function headings(): array
     {
-        return [
-            'ID',
-            'Name',
-            'Category',
-            'Quantity',
-            'Unit Price',
-            'Created At',
-            'Updated At'
-        ];
+        return ['ID', 'Name', 'Category', 'Quantity', 'Unit Price'];
     }
 
     public function map($item): array
     {
-        return [
-            $item->id,
-            $item->name,
-            $item->category->name,
-            $item->quantity,
-            'Rp ' . number_format($item->unit_price, 2),
-            $item->created_at->format('Y-m-d H:i:s'),
-            $item->updated_at->format('Y-m-d H:i:s'),
-        ];
+        return [$item->id, $item->name, $item->category->name, $item->quantity, 'Rp ' . number_format($item->unit_price, 2)];
     }
 }

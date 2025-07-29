@@ -3,59 +3,54 @@
 namespace App\Observers;
 
 use App\Models\Item;
-use App\Models\Log;
+use App\Models\ItemHistory;
+use Illuminate\Support\Facades\Auth;
 
 class ItemObserver
 {
-    /**
-     * Handle the Item "created" event.
-     */
     public function created(Item $item)
     {
-        Log::create([
-            'user_id' => auth()->id(),
+        ItemHistory::create([
+            'item_id' => $item->id,
+            'user_id' => Auth::id(),
             'action' => 'created',
-            'model' => 'Item',
-            'model_id' => $item->id,
-            'data' => json_encode($item->toArray()),
+            'field' => null,
+            'old_value' => null,
+            'new_value' => json_encode($item->toArray()),
         ]);
     }
 
     public function updated(Item $item)
     {
-        Log::create([
-            'user_id' => auth()->id(),
-            'action' => 'updated',
-            'model' => 'Item',
-            'model_id' => $item->id,
-            'data' => json_encode($item->toArray()),
-        ]);
+        $changes = $item->getChanges();
+        $original = $item->getOriginal();
+
+        foreach ($changes as $field => $newValue) {
+            if (in_array($field, ['created_at', 'updated_at'])) {
+                continue;
+            }
+
+            ItemHistory::create([
+                'item_id' => $item->id,
+                'user_id' => Auth::id(),
+                'action' => 'updated',
+                'field' => $field,
+                'old_value' => $original[$field] ?? null,
+                'new_value' => $newValue,
+            ]);
+        }
     }
 
-    public function deleted(Item $item): void
+    public function deleted(Item $item)
     {
-        Log::create([
-            'user_id' => auth()->id(),
+        ItemHistory::create([
+            'item_id' => $item->id,
+            'item_name' => $item->name,
+            'user_id' => Auth::id(),
             'action' => 'deleted',
-            'model' => 'Item',
-            'model_id' => $item->id,
-            'data' => json_encode($item->toArray()),
+            'field' => null,
+            'old_value' => json_encode($item->toArray()),
+            'new_value' => null,
         ]);
-    }
-
-    /**
-     * Handle the Item "restored" event.
-     */
-    public function restored(Item $item): void
-    {
-        //
-    }
-
-    /**
-     * Handle the Item "force deleted" event.
-     */
-    public function forceDeleted(Item $item): void
-    {
-        //
     }
 }

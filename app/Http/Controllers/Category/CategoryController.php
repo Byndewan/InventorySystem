@@ -10,7 +10,8 @@ class CategoryController extends Controller
 {
     public function index()
     {
-        $categories = Category::latest()->paginate(10);
+        $categories = Category::withCount('items')->latest()->paginate(10);
+
         return view('categories.index', compact('categories'));
     }
 
@@ -27,13 +28,7 @@ class CategoryController extends Controller
 
         Category::create($request->all());
 
-        return redirect()->route('categories.index')
-            ->with('success', 'Category created successfully.');
-    }
-
-    public function show(Category $category)
-    {
-        return view('categories.show', compact('category'));
+        return redirect()->route('categories.index')->with('success', 'Kategori berhasil ditambahkan.');
     }
 
     public function edit(Category $category)
@@ -44,20 +39,22 @@ class CategoryController extends Controller
     public function update(Request $request, Category $category)
     {
         $request->validate([
-            'name' => 'required|unique:categories,name,'.$category->id.'|max:255',
+            'name' => 'required|unique:categories,name,' . $category->id . '|max:255',
         ]);
 
         $category->update($request->all());
 
-        return redirect()->route('categories.index')
-            ->with('success', 'Category updated successfully');
+        return redirect()->route('categories.index')->with('success', 'Kategori berhasil diperbarui');
     }
 
     public function destroy(Category $category)
     {
+        if ($category->items()->count() > 0) {
+            return redirect()->route('categories.index')->with('error', 'Kategori tidak dapat dihapus karena masih terhubung dengan Barang.');
+        }
+
         $category->delete();
 
-        return redirect()->route('categories.index')
-            ->with('success', 'Category deleted successfully');
+        return redirect()->route('categories.index')->with('success', 'Kategori berhasil dihapus');
     }
 }

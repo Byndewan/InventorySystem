@@ -7,7 +7,7 @@ use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Item\ItemController;
 use App\Http\Controllers\Profile\ProfileController;
 
-// Protect Auth Routes
+// Protected Auth Routes
 Route::middleware('guest.only')->group(function () {
 
     // Page Login Routes

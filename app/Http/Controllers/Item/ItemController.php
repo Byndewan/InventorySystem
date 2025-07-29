@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Item;
 use App\Exports\ItemsExport;
 use App\Exports\ItemTemplateExport;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ImportItemRequest;
+use App\Http\Requests\StoreItemRequest;
+use App\Http\Requests\UpdateItemRequest;
 use App\Imports\ItemsImport;
 use App\Models\Category;
 use App\Models\Item;
@@ -40,16 +43,9 @@ class ItemController extends Controller
         return view('items.create', compact('categories'));
     }
 
-    public function store(Request $request)
+    public function store(StoreItemRequest $request)
     {
-        $request->validate([
-            'name' => 'required|max:255',
-            'category_id' => 'required|exists:categories,id',
-            'quantity' => 'required|integer|min:0',
-            'unit_price' => 'required|numeric|min:0',
-        ]);
-
-        Item::create($request->all());
+        Item::create($request->validated());
 
         return redirect()->route('items.index')->with('success', 'Barang berhasil ditambahkan');
     }
@@ -60,16 +56,9 @@ class ItemController extends Controller
         return view('items.edit', compact('item', 'categories'));
     }
 
-    public function update(Request $request, Item $item)
+    public function update(UpdateItemRequest $request, Item $item)
     {
-        $request->validate([
-            'name' => 'required|max:255',
-            'category_id' => 'required|exists:categories,id',
-            'quantity' => 'required|integer|min:0',
-            'unit_price' => 'required|numeric|min:0',
-        ]);
-
-        $item->update($request->all());
+        $item->update($request->validated());
 
         return redirect()->route('items.index')->with('success', 'Barang berhasil diperbarui');
     }
@@ -86,12 +75,8 @@ class ItemController extends Controller
         return Excel::download(new ItemsExport(), 'items.xlsx');
     }
 
-    public function import(Request $request)
+    public function import(ImportItemRequest $request)
     {
-        $request->validate([
-            'file' => 'required|file|mimes:xlsx,xls,csv|max:10240',
-        ]);
-
         try {
             Excel::import(new ItemsImport(), $request->file('file'));
             return back()->with('success', 'Barang berhasil diimpor.');
